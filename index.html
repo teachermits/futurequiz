@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2 English Practice - Future & Desires</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Outfit', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+        .drag-over {
+            border-color: #8b5cf6 !important;
+            background-color: #f3e8ff !important;
+            transform: scale(1.02);
+        }
+        .match-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .match-card.selected {
+            border-color: #7c3aed;
+            background-color: #f3e8ff;
+            transform: translateY(-2px);
+        }
+        .match-card.matched {
+            border-color: #10b981;
+            background-color: #ecfdf5;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .animated-pop {
+            animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes pop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/20 p-2.5 rounded-xl backdrop-blur-md">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-yellow-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">GrammarQuest A2</h1>
+                    <p class="text-xs text-indigo-100">Simple Future & 'Would Like To'</p>
+                </div>
+            </div>
+            
+            <!-- Overall Score & Progress -->
+            <div class="flex items-center space-x-4 bg-white/10 px-4 py-2 rounded-full backdrop-blur-md">
+                <div class="text-sm">
+                    <span class="text-indigo-200">Score: </span>
+                    <span id="global-score" class="font-bold text-yellow-300 text-lg">0</span>
+                    <span class="text-indigo-200">/ 20</span>
+                </div>
+                <div class="w-24 bg-white/20 h-2.5 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-yellow-400 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- Welcome Hero Banner -->
+        <section class="bg-white rounded-2xl p-6 mb-8 card-shadow border border-slate-100 relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-64 h-full bg-indigo-50 rounded-l-full -z-0 opacity-50 hidden md:block"></div>
+            <div class="relative z-10 max-w-2xl">
+                <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold uppercase tracking-wider">A2 Level Mastery</span>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 mt-2 mb-3">Expressing the Future & Desires</h2>
+                <p class="text-slate-600 mb-4 text-sm md:text-base leading-relaxed">
+                    Welcome! Practice using <span class="font-semibold text-indigo-600">will / won't</span> for offers, promises, spontaneous decisions, and predictions, plus <span class="font-semibold text-purple-600">would like to</span> for dreams and desires. Complete all sections to generate your verified certificate!
+                </p>
+                
+                <!-- Student Name Input at the Start -->
+                <div class="bg-indigo-50/80 p-4 rounded-xl border border-indigo-200 mb-4">
+                    <label for="student-name-input" class="block text-xs font-bold uppercase tracking-wider text-indigo-900 mb-1.5">
+                        <i class="fa-solid fa-user-graduate mr-1 text-indigo-600"></i> Enter Your Full Name to Begin:
+                    </label>
+                    <input type="text" id="student-name-input" placeholder="e.g. Jane Doe" oninput="syncStudentName(this.value)" class="w-full sm:w-80 px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-sm" />
+                </div>
+
+                <!-- Quick Grammar Reference Tags -->
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="bg-blue-50 border border-blue-200 text-blue-700 px-3 py-1 rounded-lg"><i class="fa-solid fa-hand-holding-heart mr-1"></i> Offer: "I'll help you"</span>
+                    <span class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 py-1 rounded-lg"><i class="fa-solid fa-handshake mr-1"></i> Promise: "I won't tell"</span>
+                    <span class="bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1 rounded-lg"><i class="fa-solid fa-bolt mr-1"></i> Decision: "I'll take it"</span>
+                    <span class="bg-purple-50 border border-purple-200 text-purple-700 px-3 py-1 rounded-lg"><i class="fa-solid fa-crystal-ball mr-1"></i> Prediction: "It will rain"</span>
+                    <span class="bg-pink-50 border border-pink-200 text-pink-700 px-3 py-1 rounded-lg"><i class="fa-solid fa-star mr-1"></i> Desire: "I'd like to travel"</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: Drag & Drop (Identify Future Functions) -->
+        <section class="bg-white rounded-2xl p-6 mb-8 card-shadow border border-slate-100 animated-pop">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div class="flex items-center space-x-3">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">1</span>
+                    <h3 class="text-lg font-bold text-slate-800">Drag & Drop: Classify the Functions</h3>
+                </div>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium">8 Questions</span>
+            </div>
+            
+            <p class="text-slate-600 text-sm mb-6">Drag each phrase below into the correct category box based on its function (Offer, Promise, Decision, or Prediction).</p>
+
+            <!-- Draggable Items Container -->
+            <div id="drag-items" class="flex flex-wrap gap-3 p-4 bg-slate-50 rounded-xl mb-6 border border-dashed border-slate-300 min-h-[90px] items-center">
+                <div draggable="true" id="item-1" data-category="offer" class="drag-item cursor-grab bg-white px-3.5 py-2 rounded-lg shadow-sm border border-slate-200 text-sm font-medium hover:border-indigo-400 hover:shadow transition-all text-slate-700">
+                    <i class="fa-solid fa-grip-vertical text-slate-300 mr-2"></i>"I'll carry those heavy bags for you."
+                </div>
+                <div draggable="true" id="item-2" data-category="promise" class="drag-item cursor-grab bg-white px-3.5 py-2 rounded-lg shadow-sm border border-slate-200 text-sm font-medium hover:border-indigo-400 hover:shadow transition-all text-slate-700">
+                    <i class="fa-solid fa-grip-vertical text-slate-300 mr-2"></i>"I will love you forever, no matter what."
+                </div>
+                <div draggable="true" id="item-3" data-category="decision" class="drag-item cursor-grab bg-white px-3.5 py-2 rounded-lg shadow-sm border border-slate-200 text-sm font-medium hover:border-indigo-400 hover:shadow transition-all text-slate-700">
+                    <i class="fa-solid fa-grip-vertical text-slate-300 mr-2"></i>"Wait, I'll come with you right now!"
+                </div>
+                <div draggable="true" id="item-4" data-category="prediction" class="drag-item cursor-grab bg-white px-3.5 py-2 rounded-lg shadow-sm border border-slate-200 text-sm font-medium hover:border-indigo-400 hover:shadow transition-all text-slate-700">
+                    <i class="fa-solid fa-grip-vertical text-slate-300 mr-2"></i>"I think robots will do our housework in 2050."
+                </div>
+                <div draggable="true" id="item-5" data-category="offer" class="drag-item cursor-grab bg-white px-3.5 py-2 rounded-lg shadow-sm border border-slate-200 text-sm font-medium hover:border-indigo-400 hover:shadow transition-all text-slate-700">
+                    <i class="fa-solid fa-grip-vertical text-slate-300 mr-2"></i>"I'll open the window for some fresh air."
+                </div>
+                <div draggable="true" id="item-6" data-category="promise" class="drag-item cursor-grab bg-white px-3.5 py-2 rounded-lg shadow-sm border border-slate-200 text-sm font-medium hover:border-indigo-400 hover:shadow transition-all text-slate-700">
+                    <i class="fa-solid fa-grip-vertical text-slate-300 mr-2"></i>"Don't worry, I won't be late again!"
+                </div>
+                <div draggable="true" id="item-7" data-category="decision" class="drag-item cursor-grab bg-white px-3.5 py-2 rounded-lg shadow-sm border border-slate-200 text-sm font-medium hover:border-indigo-400 hover:shadow transition-all text-slate-700">
+                    <i class="fa-solid fa-grip-vertical text-slate-300 mr-2"></i>"I'm hungry! I'll order a pizza right now."
+                </div>
+                <div draggable="true" id="item-8" data-category="prediction" class="drag-item cursor-grab bg-white px-3.5 py-2 rounded-lg shadow-sm border border-slate-200 text-sm font-medium hover:border-indigo-400 hover:shadow transition-all text-slate-700">
+                    <i class="fa-solid fa-grip-vertical text-slate-300 mr-2"></i>"It will probably rain later this afternoon."
+                </div>
+            </div>
+
+            <!-- Target Drop Zones Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Zone: Offer -->
+                <div data-zone="offer" class="drop-zone bg-indigo-50/50 border-2 border-dashed border-indigo-200 rounded-xl p-3 min-h-[160px] flex flex-col transition-all">
+                    <div class="font-bold text-xs uppercase tracking-wider text-indigo-700 mb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-hand-holding-heart mr-1.5"></i> Offer</span>
+                        <span class="count text-indigo-400 text-xs">0</span>
+                    </div>
+                    <div class="zone-content flex flex-col gap-2 flex-grow"></div>
+                </div>
+
+                <!-- Zone: Promise -->
+                <div data-zone="promise" class="drop-zone bg-emerald-50/50 border-2 border-dashed border-emerald-200 rounded-xl p-3 min-h-[160px] flex flex-col transition-all">
+                    <div class="font-bold text-xs uppercase tracking-wider text-emerald-700 mb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-handshake mr-1.5"></i> Promise</span>
+                        <span class="count text-emerald-400 text-xs">0</span>
+                    </div>
+                    <div class="zone-content flex flex-col gap-2 flex-grow"></div>
+                </div>
+
+                <!-- Zone: Decision -->
+                <div data-zone="decision" class="drop-zone bg-amber-50/50 border-2 border-dashed border-amber-200 rounded-xl p-3 min-h-[160px] flex flex-col transition-all">
+                    <div class="font-bold text-xs uppercase tracking-wider text-amber-700 mb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-bolt mr-1.5"></i> Decision</span>
+                        <span class="count text-amber-400 text-xs">0</span>
+                    </div>
+                    <div class="zone-content flex flex-col gap-2 flex-grow"></div>
+                </div>
+
+                <!-- Zone: Prediction -->
+                <div data-zone="prediction" class="drop-zone bg-purple-50/50 border-2 border-dashed border-purple-200 rounded-xl p-3 min-h-[160px] flex flex-col transition-all">
+                    <div class="font-bold text-xs uppercase tracking-wider text-purple-700 mb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-crystal-ball mr-1.5"></i> Prediction</span>
+                        <span class="count text-purple-400 text-xs">0</span>
+                    </div>
+                    <div class="zone-content flex flex-col gap-2 flex-grow"></div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-between items-center">
+                <button id="check-drag-btn" onclick="checkDragAndDrop()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                    <i class="fa-solid fa-check-circle"></i> Check Drag Answers
+                </button>
+                <div id="drag-feedback" class="text-sm font-medium"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Matching Game (Promises, Dreams & Desires) -->
+        <section class="bg-white rounded-2xl p-6 mb-8 card-shadow border border-slate-100 animated-pop">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div class="flex items-center space-x-3">
+                    <span class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-sm">2</span>
+                    <h3 class="text-lg font-bold text-slate-800">Match Prompt to Expression</h3>
+                </div>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium">5 Pairs</span>
+            </div>
+
+            <p class="text-slate-600 text-sm mb-6">Click a situation on the left, then click its matching response on the right using <span class="font-semibold text-indigo-600">will/won't</span> or <span class="font-semibold text-purple-600">would like to</span>.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Prompts Column -->
+                <div class="space-y-3" id="match-prompts">
+                    <!-- DynamicJS generated or static markup -->
+                </div>
+
+                <!-- Responses Column -->
+                <div class="space-y-3" id="match-responses">
+                    <!-- DynamicJS generated or static markup -->
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-between items-center">
+                <div id="match-status" class="text-sm font-medium text-slate-600">Matched: <span id="match-score">0</span> / 5</div>
+                <button onclick="resetMatchGame()" class="text-xs text-indigo-600 hover:underline font-semibold">Reset Matching</button>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Fill in the Blanks Quiz -->
+        <section class="bg-white rounded-2xl p-6 mb-8 card-shadow border border-slate-100 animated-pop">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div class="flex items-center space-x-3">
+                    <span class="w-8 h-8 rounded-xl bg-pink-600 text-white flex items-center justify-center font-bold text-sm">3</span>
+                    <h3 class="text-lg font-bold text-slate-800">Fill in the Blanks: Practice & Choose</h3>
+                </div>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium">10 Questions</span>
+            </div>
+
+            <p class="text-slate-600 text-sm mb-6">Complete the sentences by selecting or typing the correct form of <span class="font-semibold text-indigo-600">will</span>, <span class="font-semibold text-indigo-600">won't</span>, or <span class="font-semibold text-purple-600">would like to / 'd like to</span>.</p>
+
+            <form id="fill-blanks-form" class="space-y-5">
+                <!-- Q1 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>1. (Spontaneous Decision) Phone rings: "I</span>
+                        <select id="q1" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- choose --</option>
+                            <option value="will answer">will answer</option>
+                            <option value="am answering">am answering</option>
+                            <option value="would like to answer">would like to answer</option>
+                        </select>
+                        <span>it!"</span>
+                    </div>
+                    <div id="q1-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>2. (Dream/Desire) Someday, I</span>
+                        <select id="q2" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- choose --</option>
+                            <option value="will live">will live</option>
+                            <option value="would like to live">would like to live</option>
+                            <option value="live">live</option>
+                        </select>
+                        <span>in a peaceful house by the sea.</span>
+                    </div>
+                    <div id="q2-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>3. (Promise) "Trust me, I</span>
+                        <input type="text" id="q3" placeholder="type short form e.g. won't tell" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 w-44 text-sm" />
+                        <span>anyone your secret!"</span>
+                    </div>
+                    <div id="q3-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>4. (Offer) "You look tired. I</span>
+                        <select id="q4" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- choose --</option>
+                            <option value="will make">will make</option>
+                            <option value="would like to make">would like to make</option>
+                            <option value="making">making</option>
+                        </select>
+                        <span>a cup of tea for you."</span>
+                    </div>
+                    <div id="q4-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>5. (Prediction) I think scientists</span>
+                        <select id="q5" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- choose --</option>
+                            <option value="find">find</option>
+                            <option value="will find">will find</option>
+                            <option value="would like to find">would like to find</option>
+                        </select>
+                        <span>a cure for the cold soon.</span>
+                    </div>
+                    <div id="q5-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>6. (Polite Order/Desire) Customer: "I</span>
+                        <select id="q6" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- choose --</option>
+                            <option value="will order">will order</option>
+                            <option value="would like">would like</option>
+                            <option value="like to">like to</option>
+                        </select>
+                        <span>a cup of coffee and a piece of cake, please."</span>
+                    </div>
+                    <div id="q6-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>7. (Spontaneous Decision) "Oh, we don't have milk." - "Really? I</span>
+                        <input type="text" id="q7" placeholder="type 'will buy' or 'will get'" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 w-44 text-sm" />
+                        <span>some now."</span>
+                    </div>
+                    <div id="q7-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <!-- Q8 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>8. (Dream) What</span>
+                        <select id="q8" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- choose --</option>
+                            <option value="you will do">you will do</option>
+                            <option value="would you like to do">would you like to do</option>
+                            <option value="you like to do">you like to do</option>
+                        </select>
+                        <span>after you graduate?</span>
+                    </div>
+                    <div id="q8-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <!-- Q9 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>9. (Offer) "Don't worry about the dishes. I</span>
+                        <select id="q9" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- choose --</option>
+                            <option value="will wash">will wash</option>
+                            <option value="would like to wash">would like to wash</option>
+                            <option value="washed">washed</option>
+                        </select>
+                        <span>them."</span>
+                    </div>
+                    <div id="q9-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <!-- Q10 -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2 text-slate-800 text-base font-medium">
+                        <span>10. (Prediction) Look at those dark clouds! I think it</span>
+                        <select id="q10" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-indigo-600 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- choose --</option>
+                            <option value="will rain">will rain</option>
+                            <option value="would like to rain">would like to rain</option>
+                            <option value="rains">rains</option>
+                        </select>
+                        <span>very soon.</span>
+                    </div>
+                    <div id="q10-fb" class="mt-2 text-xs font-semibold hidden"></div>
+                </div>
+
+                <div class="mt-6 flex justify-between items-center">
+                    <button type="button" onclick="checkFillInBlanks()" class="bg-pink-600 hover:bg-pink-700 text-white font-semibold px-6 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Fill In Blanks
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- SECTION 4: Final Results & Certificate Download -->
+        <section id="results-section" class="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-2xl p-6 md:p-8 text-white card-shadow hidden animated-pop">
+            <div class="text-center max-w-xl mx-auto">
+                <div class="w-20 h-20 bg-yellow-400 text-slate-900 rounded-full flex items-center justify-center text-3xl font-extrabold mx-auto mb-4 shadow-lg shadow-yellow-400/20">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-extrabold mb-2">Quiz Complete!</h3>
+                <p class="text-indigo-200 text-sm md:text-base mb-6">Here is your overall performance summary. Download your official achievement scorecard below.</p>
+
+                <!-- Score Badge -->
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 mb-6">
+                    <div class="text-sm uppercase tracking-wider text-indigo-300 font-semibold mb-1">Total Score</div>
+                    <div class="text-5xl font-black text-yellow-300 mb-2"><span id="final-percentage">0</span>%</div>
+                    <p id="feedback-message" class="text-sm text-slate-200 font-medium">Great effort!</p>
+                    
+                    <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-white/10 text-xs">
+                        <div>
+                            <div class="text-indigo-300">Drag & Drop</div>
+                            <div id="drag-score-display" class="font-bold text-white text-base">0/5</div>
+                        </div>
+                        <div>
+                            <div class="text-indigo-300">Matching</div>
+                            <div id="match-score-display" class="font-bold text-white text-base">0/5</div>
+                        </div>
+                        <div>
+                            <div class="text-indigo-300">Fill Blanks</div>
+                            <div id="fill-score-display" class="font-bold text-white text-base">0/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student Name Input for Certificate -->
+                <div class="mb-6 text-left">
+                    <label for="student-name" class="block text-xs font-semibold uppercase tracking-wider text-indigo-200 mb-2">Name on your score badge:</label>
+                    <input type="text" id="student-name" placeholder="Your Full Name" value="A2 Student" oninput="syncStudentName(this.value)" class="w-full px-4 py-3 bg-white/10 border border-indigo-400/30 rounded-xl text-white placeholder-indigo-300/50 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="downloadScoreCard()" class="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-bold px-6 py-3 rounded-xl transition-all shadow-lg hover:shadow-yellow-400/30 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Download Score Image
+                    </button>
+                    <button onclick="resetAll()" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl transition-all border border-white/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Practice Again
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Hidden Canvas for Score Image Generation -->
+    <canvas id="score-canvas" width="800" height="500" class="hidden"></canvas>
+
+    <script>
+        /* State Variables */
+        let scores = {
+            drag: 0,
+            match: 0,
+            fill: 0
+        };
+
+        const totalQuestions = 23; // 8 drag + 5 match + 10 fill
+
+        /* Synchronize Student Name inputs */
+        function syncStudentName(val) {
+            document.getElementById('student-name-input').value = val;
+            document.getElementById('student-name').value = val;
+        }
+
+        /* Matching Data */
+        const matchData = [
+            { id: 1, prompt: "Someone asks: What are your future career dreams?", response: "I would like to become a professional pilot.", key: "a" },
+            { id: 2, prompt: "Your friend has a heavy suitcase at the airport.", response: "Don't worry, I'll carry it for you!", key: "b" },
+            { id: 3, prompt: "Your secret is safe with me.", response: "I promise I won't tell anyone.", key: "c" },
+            { id: 4, prompt: "What is your prediction about weather tomorrow?", response: "I think it will be sunny and warm.", key: "d" },
+            { id: 5, prompt: "You are looking at a menu in a restaurant.", response: "I'd like to order the grilled salmon, please.", key: "e" }
+        ];
+
+        let selectedPrompt = null;
+        let selectedResponse = null;
+        let matchedPairsCount = 0;
+
+        /* Initialize Page Events */
+        window.onload = function() {
+            initDragAndDrop();
+            initMatchingGame();
+            updateGlobalScore();
+        };
+
+        /* Update Global Header Score */
+        function updateGlobalScore() {
+            const totalScore = scores.drag + scores.match + scores.fill;
+            document.getElementById('global-score').textContent = totalScore;
+            
+            const percentage = (totalScore / totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+
+            if (scores.drag > 0 || scores.match > 0 || scores.fill > 0) {
+                showResultsSummary(totalScore);
+            }
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 1: Drag and Drop Logic
+        ------------------------------------------------------------- */
+        function initDragAndDrop() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', item.id);
+                    setTimeout(() => item.classList.add('opacity-50'), 0);
+                });
+
+                item.addEventListener('dragend', () => {
+                    item.classList.remove('opacity-50');
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    
+                    const itemId = e.dataTransfer.getData('text/plain');
+                    const draggedElem = document.getElementById(itemId);
+                    if (draggedElem) {
+                        const targetContent = zone.querySelector('.zone-content');
+                        targetContent.appendChild(draggedElem);
+                        updateZoneCounts();
+                    }
+                });
+            });
+        }
+
+        function updateZoneCounts() {
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                const count = zone.querySelector('.zone-content').children.length;
+                zone.querySelector('.count').textContent = count;
+            });
+        }
+
+        function checkDragAndDrop() {
+            let correct = 0;
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            dropZones.forEach(zone => {
+                const zoneCategory = zone.getAttribute('data-zone');
+                const items = zone.querySelectorAll('.drag-item');
+
+                items.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+                    if (zoneCategory === itemCategory) {
+                        correct++;
+                        item.classList.remove('border-slate-200', 'border-red-300');
+                        item.classList.add('border-emerald-500', 'bg-emerald-50');
+                    } else {
+                        item.classList.remove('border-slate-200', 'border-emerald-500');
+                        item.classList.add('border-red-300', 'bg-red-50');
+                    }
+                });
+            });
+
+            scores.drag = correct;
+            const feedbackElem = document.getElementById('drag-feedback');
+            
+            if (correct === 8) {
+                feedbackElem.className = "text-sm font-bold text-emerald-600";
+                feedbackElem.innerHTML = `<i class="fa-solid fa-circle-check"></i> Perfect! 8/8 correct!`;
+            } else {
+                feedbackElem.className = "text-sm font-semibold text-amber-600";
+                feedbackElem.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> You got ${correct}/8 correct. Try adjusting red items!`;
+            }
+
+            updateGlobalScore();
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 2: Matching Game Logic
+        ------------------------------------------------------------- */
+        function initMatchingGame() {
+            const promptsContainer = document.getElementById('match-prompts');
+            const responsesContainer = document.getElementById('match-responses');
+
+            promptsContainer.innerHTML = '';
+            responsesContainer.innerHTML = '';
+
+            // Shuffle responses
+            const shuffledResponses = [...matchData].sort(() => Math.random() - 0.5);
+
+            matchData.forEach(item => {
+                const promptCard = document.createElement('div');
+                promptCard.className = 'match-card border border-slate-200 p-3.5 rounded-xl cursor-pointer hover:border-indigo-300 bg-slate-50 text-sm font-medium text-slate-700 flex items-center justify-between';
+                promptCard.dataset.key = item.key;
+                promptCard.dataset.type = 'prompt';
+                promptCard.innerHTML = `<span>${item.prompt}</span> <i class="fa-regular fa-circle text-slate-300"></i>`;
+                promptCard.onclick = () => handleMatchSelect(promptCard);
+                promptsContainer.appendChild(promptCard);
+            });
+
+            shuffledResponses.forEach(item => {
+                const responseCard = document.createElement('div');
+                responseCard.className = 'match-card border border-slate-200 p-3.5 rounded-xl cursor-pointer hover:border-indigo-300 bg-slate-50 text-sm font-medium text-slate-700 flex items-center justify-between';
+                responseCard.dataset.key = item.key;
+                responseCard.dataset.type = 'response';
+                responseCard.innerHTML = `<span>${item.response}</span> <i class="fa-regular fa-circle text-slate-300"></i>`;
+                responseCard.onclick = () => handleMatchSelect(responseCard);
+                responsesContainer.appendChild(responseCard);
+            });
+        }
+
+        function handleMatchSelect(card) {
+            if (card.classList.contains('matched')) return;
+
+            const cardType = card.dataset.type;
+
+            if (cardType === 'prompt') {
+                document.querySelectorAll('#match-prompts .match-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedPrompt = card;
+            } else {
+                document.querySelectorAll('#match-responses .match-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedResponse = card;
+            }
+
+            if (selectedPrompt && selectedResponse) {
+                if (selectedPrompt.dataset.key === selectedResponse.dataset.key) {
+                    // Match Found
+                    selectedPrompt.classList.remove('selected');
+                    selectedResponse.classList.remove('selected');
+                    
+                    selectedPrompt.classList.add('matched');
+                    selectedResponse.classList.add('matched');
+
+                    selectedPrompt.querySelector('i').className = "fa-solid fa-circle-check text-emerald-500";
+                    selectedResponse.querySelector('i').className = "fa-solid fa-circle-check text-emerald-500";
+
+                    matchedPairsCount++;
+                    scores.match = matchedPairsCount;
+                    document.getElementById('match-score').textContent = matchedPairsCount;
+
+                    selectedPrompt = null;
+                    selectedResponse = null;
+
+                    updateGlobalScore();
+                } else {
+                    // Incorrect Match
+                    const p = selectedPrompt;
+                    const r = selectedResponse;
+                    p.classList.add('border-red-400', 'bg-red-50');
+                    r.classList.add('border-red-400', 'bg-red-50');
+
+                    setTimeout(() => {
+                        p.classList.remove('selected', 'border-red-400', 'bg-red-50');
+                        r.classList.remove('selected', 'border-red-400', 'bg-red-50');
+                    }, 800);
+
+                    selectedPrompt = null;
+                    selectedResponse = null;
+                }
+            }
+        }
+
+        function resetMatchGame() {
+            selectedPrompt = null;
+            selectedResponse = null;
+            matchedPairsCount = 0;
+            scores.match = 0;
+            document.getElementById('match-score').textContent = 0;
+            initMatchingGame();
+            updateGlobalScore();
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 3: Fill in the Blanks & Instant Feedback
+        ------------------------------------------------------------- */
+        function checkFillInBlanks() {
+            const answers = {
+                q1: "will answer",
+                q2: "would like to live",
+                q3: ["won't tell", "will not tell", "wont tell"],
+                q4: "will make",
+                q5: "will find",
+                q6: "would like",
+                q7: ["will buy", "will get", "ll buy", "'ll buy", "'ll get"],
+                q8: "would you like to do",
+                q9: "will wash",
+                q10: "will rain"
+            };
+
+            const explanations = {
+                q1: "Spontaneous decision made at the moment of speaking -> use 'will'.",
+                q2: "Expressing a dream/desire for the future -> use 'would like to'.",
+                q3: "A promise about keeping secrets -> use 'won't / will not'.",
+                q4: "Making an offer to help someone -> use 'will'.",
+                q5: "General future prediction -> use 'will'.",
+                q6: "Polite request / ordering desire -> use 'would like'.",
+                q7: "Spontaneous decision response -> use 'will buy/get'.",
+                q8: "Asking about dreams/desires -> 'would you like to...'",
+                q9: "Offer to do housework -> use 'will'.",
+                q10: "Prediction based on belief or current scene -> use 'will'."
+            };
+
+            let score = 0;
+
+            for (let i = 1; i <= 10; i++) {
+                const key = `q${i}`;
+                const elem = document.getElementById(key);
+                const fb = document.getElementById(`${key}-fb`);
+                let val = elem.value.trim().toLowerCase();
+
+                let isCorrect = false;
+
+                if (Array.isArray(answers[key])) {
+                    isCorrect = answers[key].includes(val);
+                } else {
+                    isCorrect = (val === answers[key]);
+                }
+
+                fb.classList.remove('hidden', 'text-emerald-600', 'text-red-500');
+
+                if (isCorrect) {
+                    score++;
+                    elem.classList.remove('border-slate-300', 'border-red-400');
+                    elem.classList.add('border-emerald-500', 'bg-emerald-50');
+                    fb.classList.add('text-emerald-600');
+                    fb.innerHTML = `<i class="fa-solid fa-check"></i> Correct! ${explanations[key]}`;
+                } else {
+                    elem.classList.remove('border-slate-300', 'border-emerald-500');
+                    elem.classList.add('border-red-400', 'bg-red-50');
+                    fb.classList.add('text-red-500');
+                    const correctDisplay = Array.isArray(answers[key]) ? answers[key][0] : answers[key];
+                    fb.innerHTML = `<i class="fa-solid fa-xmark"></i> Incorrect. Correct: "<strong>${correctDisplay}</strong>". ${explanations[key]}`;
+                }
+            }
+
+            scores.fill = score;
+            updateGlobalScore();
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 4: Score Calculation & Certificate Generator
+        ------------------------------------------------------------- */
+        function showResultsSummary(totalScore) {
+            const resultsSection = document.getElementById('results-section');
+            resultsSection.classList.remove('hidden');
+
+            const percentage = Math.round((totalScore / totalQuestions) * 100);
+            document.getElementById('final-percentage').textContent = percentage;
+
+            document.getElementById('drag-score-display').textContent = `${scores.drag}/8`;
+            document.getElementById('match-score-display').textContent = `${scores.match}/5`;
+            document.getElementById('fill-score-display').textContent = `${scores.fill}/10`;
+
+            const feedbackMsg = document.getElementById('feedback-message');
+            if (percentage >= 90) {
+                feedbackMsg.textContent = "Outstanding! You have mastered A2 Simple Future & 'Would Like To'!";
+            } else if (percentage >= 70) {
+                feedbackMsg.textContent = "Great job! You have a solid grasp of these grammar functions.";
+            } else if (percentage >= 50) {
+                feedbackMsg.textContent = "Good try! Review the rules above and try again for a higher score.";
+            } else {
+                feedbackMsg.textContent = "Keep practicing! Review the rules for predictions, offers & promises.";
+            }
+        }
+
+        /* Canvas Image Download for Scorecard */
+        function downloadScoreCard() {
+            const canvas = document.getElementById('score-canvas');
+            const ctx = canvas.getContext('2d');
+            const studentName = document.getElementById('student-name-input').value.trim() || document.getElementById('student-name').value.trim() || "A2 Student";
+            const totalScore = scores.drag + scores.match + scores.fill;
+            const percentage = Math.round((totalScore / totalQuestions) * 100);
+
+            // Background Gradient
+            const gradient = ctx.createLinearGradient(0, 0, 800, 500);
+            gradient.addColorStop(0, '#312e81'); // Indigo 900
+            gradient.addColorStop(0.5, '#4c1d95'); // Purple 900
+            gradient.addColorStop(1, '#831843'); // Pink 900
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 800, 500);
+
+            // Decorative border
+            ctx.strokeStyle = '#facc15'; // Yellow 400
+            ctx.lineWidth = 8;
+            ctx.strokeRect(20, 20, 760, 460);
+
+            // Inner card background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.roundRect(40, 40, 720, 420, 20);
+            ctx.fill();
+
+            // Header Text
+            ctx.fillStyle = '#facc15';
+            ctx.font = 'bold 24px Outfit, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('GrammarQuest A2 - English Proficiency Badge', 400, 90);
+
+            // Student Name
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 36px Outfit, sans-serif';
+            ctx.fillText(studentName, 400, 150);
+
+            ctx.fillStyle = '#c7d2fe';
+            ctx.font = '16px Outfit, sans-serif';
+            ctx.fillText('has completed the Simple Future & "Would Like To" Mastery Module', 400, 185);
+
+            // Score Circle / Box
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.roundRect(270, 210, 260, 130, 16);
+            ctx.fill();
+
+            ctx.fillStyle = '#facc15';
+            ctx.font = 'extrabold 56px Outfit, sans-serif';
+            ctx.fillText(`${percentage}%`, 400, 280);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '14px Outfit, sans-serif';
+            ctx.fillText(`Total Score: ${totalScore} / ${totalQuestions} Correct`, 400, 315);
+
+            // Details Breakdown
+            ctx.font = '14px Outfit, sans-serif';
+            ctx.fillStyle = '#e0e7ff';
+            ctx.fillText(`Offers, Promises & Decisions (Drag): ${scores.drag}/8   |   Matching: ${scores.match}/5   |   Fill Blanks: ${scores.fill}/10`, 400, 380);
+
+            // Date Stamp
+            const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            ctx.fillStyle = '#a5b4fc';
+            ctx.font = 'italic 13px Outfit, sans-serif';
+            ctx.fillText(`Issued on ${today} • GrammarQuest Learning Platform`, 400, 425);
+
+            // Trigger Download
+            const link = document.createElement('a');
+            link.download = `Grammar_A2_Scorecard_${studentName.replace(/\s+/g, '_')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        /* Reset Application */
+        function resetAll() {
+            scores = { drag: 0, match: 0, fill: 0 };
+            
+            // Reset Drag
+            const dragContainer = document.getElementById('drag-items');
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.classList.remove('border-emerald-500', 'bg-emerald-50', 'border-red-300', 'bg-red-50');
+                item.classList.add('border-slate-200');
+                dragContainer.appendChild(item);
+            });
+            document.getElementById('drag-feedback').innerHTML = '';
+            updateZoneCounts();
+
+            // Reset Match
+            resetMatchGame();
+
+            // Reset Fill
+            for (let i = 1; i <= 10; i++) {
+                const elem = document.getElementById(`q${i}`);
+                const fb = document.getElementById(`q${i}-fb`);
+                elem.value = '';
+                elem.classList.remove('border-emerald-500', 'bg-emerald-50', 'border-red-400', 'bg-red-50');
+                elem.classList.add('border-slate-300');
+                fb.classList.add('hidden');
+            }
+
+            // Hide Results
+            document.getElementById('results-section').classList.add('hidden');
+            
+            updateGlobalScore();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
